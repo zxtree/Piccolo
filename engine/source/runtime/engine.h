@@ -14,6 +14,7 @@ namespace Piccolo
     class PiccoloEngine
     {
         friend class PiccoloEditor;
+        friend class PiccoloGame;
 
         static const float s_fps_alpha;
 
