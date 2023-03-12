@@ -44,9 +44,9 @@ namespace Piccolo
             return;
 
         unsigned int command = g_runtime_global_context.m_input_system->getGameCommand();
-        if (command < (unsigned int)GameCommand::invalid)
+        if (command < (unsigned int)GameCommand::INVALID)
         {
-            if ((((unsigned int)GameCommand::free_carema & command) > 0) != m_is_free_camera)
+            if ((((unsigned int)GameCommand::INVALID & command) > 0) != m_is_free_camera)
             {
                 toggleFreeCamera();
             }

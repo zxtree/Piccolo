@@ -14,7 +14,7 @@ target_include_directories(
   PUBLIC $<BUILD_INTERFACE:${THIRD_PARTY_DIR}/stb>
 )
 
-set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17 OUTPUT_NAME "PiccoloG")
+set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17 OUTPUT_NAME "PiccoloGame")
 set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "Engine")
 
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")

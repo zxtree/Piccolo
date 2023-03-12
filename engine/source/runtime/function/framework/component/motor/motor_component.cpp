@@ -70,7 +70,7 @@ namespace Piccolo
 
         unsigned int command = g_runtime_global_context.m_input_system->getGameCommand();
 
-        if (command >= (unsigned int)GameCommand::invalid)
+        if (command >= (unsigned int)GameCommand::INVALID)
             return;
 
         calculatedDesiredHorizontalMoveSpeed(command, delta_time);
@@ -84,11 +84,11 @@ namespace Piccolo
 
     void MotorComponent::calculatedDesiredHorizontalMoveSpeed(unsigned int command, float delta_time)
     {
-        bool has_move_command = ((unsigned int)GameCommand::forward | (unsigned int)GameCommand::backward |
-                                 (unsigned int)GameCommand::left | (unsigned int)GameCommand::right) &
+        bool has_move_command = ((unsigned int)GameCommand::FORWARD | (unsigned int)GameCommand::BACKWARD |
+                                 (unsigned int)GameCommand::LEFT | (unsigned int)GameCommand::RIGHT) &
                                 command;
-        has_move_command &= ((unsigned int)GameCommand::free_carema & command) == 0;
-        bool has_sprint_command = (unsigned int)GameCommand::sprint & command;
+        has_move_command &= ((unsigned int)GameCommand::INVALID & command) == 0;
+        bool has_sprint_command = (unsigned int)GameCommand::TRIGGER_LT & command;
 
         bool  is_acceleration    = false;
         float final_acceleration = m_motor_res.m_move_acceleration;
@@ -130,7 +130,7 @@ namespace Piccolo
 
         if (m_jump_state == JumpState::idle)
         {
-            if ((unsigned int)GameCommand::jump & command)
+            if ((unsigned int)GameCommand::BUTTON_A & command)
             {
                 m_jump_state                  = JumpState::rising;
                 m_vertical_move_speed         = Math::sqrt(m_motor_res.m_jump_height * 2 * gravity);
@@ -163,22 +163,22 @@ namespace Piccolo
                 m_desired_horizontal_move_direction = Vector3::ZERO;
             }
 
-            if ((unsigned int)GameCommand::forward & command)
+            if ((unsigned int)GameCommand::FORWARD & command)
             {
                 m_desired_horizontal_move_direction += forward_dir;
             }
 
-            if ((unsigned int)GameCommand::backward & command)
+            if ((unsigned int)GameCommand::BACKWARD & command)
             {
                 m_desired_horizontal_move_direction -= forward_dir;
             }
 
-            if ((unsigned int)GameCommand::left & command)
+            if ((unsigned int)GameCommand::LEFT & command)
             {
                 m_desired_horizontal_move_direction += left_dir;
             }
 
-            if ((unsigned int)GameCommand::right & command)
+            if ((unsigned int)GameCommand::RIGHT & command)
             {
                 m_desired_horizontal_move_direction -= left_dir;
             }

@@ -8,8 +8,6 @@
 #include "runtime/function/render/render_system.h"
 #include "runtime/function/render/window_system.h"
 
-#include <GLFW/glfw3.h>
-
 namespace Piccolo
 {
     unsigned int k_complement_control_command = 0xFFFFFFFF;
@@ -22,82 +20,55 @@ namespace Piccolo
         }
     }
 
+    void InputSystem::initKeymap()
+    {
+        m_keymap[GLFW_KEY_W]            = GameCommand::FORWARD;
+        m_keymap[GLFW_KEY_A]            = GameCommand::LEFT;
+        m_keymap[GLFW_KEY_S]            = GameCommand::BACKWARD;
+        m_keymap[GLFW_KEY_D]            = GameCommand::RIGHT;
+
+        m_keymap[GLFW_KEY_J]            = GameCommand::BUTTON_A;
+        m_keymap[GLFW_KEY_K]            = GameCommand::BUTTON_B;
+        m_keymap[GLFW_KEY_U]            = GameCommand::BUTTON_C;
+        m_keymap[GLFW_KEY_I]            = GameCommand::BUTTON_D;
+
+        m_keymap[GLFW_KEY_ESCAPE]       = GameCommand::ESCAPE;
+    }
+
+    void InputSystem::initGamepadMap()
+    {
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_A]                = GameCommand::BUTTON_A;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_B]                = GameCommand::BUTTON_B;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_X]                = GameCommand::BUTTON_C;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_Y]                = GameCommand::BUTTON_D;
+
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_DPAD_UP]          = GameCommand::FORWARD;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_DPAD_DOWN]        = GameCommand::BACKWARD;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_DPAD_LEFT]        = GameCommand::LEFT;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT]       = GameCommand::RIGHT;
+
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_LEFT_THUMB]       = GameCommand::TRIGGER_LT;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER]      = GameCommand::TRIGGER_LB;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_RIGHT_THUMB]      = GameCommand::TRIGGER_RT;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER]     = GameCommand::TRIGGER_RB;
+
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_START]            = GameCommand::START;
+        m_gamepad_map[GLFW_GAMEPAD_BUTTON_BACK]             = GameCommand::ESCAPE;
+    }
+
     void InputSystem::onKeyInGameMode(int key, int scancode, int action, int mods)
     {
-        m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::jump);
+        //m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::jump);
 
+        GameCommand cmd = m_keymap[key];
+        LOG_DEBUG("on key game command: {}", cmd);
         if (action == GLFW_PRESS)
         {
-            switch (key)
-            {
-                case GLFW_KEY_ESCAPE:
-                    // close();
-                    break;
-                case GLFW_KEY_R:
-                    break;
-                case GLFW_KEY_A:
-                    m_game_command |= (unsigned int)GameCommand::left;
-                    break;
-                case GLFW_KEY_S:
-                    m_game_command |= (unsigned int)GameCommand::backward;
-                    break;
-                case GLFW_KEY_W:
-                    m_game_command |= (unsigned int)GameCommand::forward;
-                    break;
-                case GLFW_KEY_D:
-                    m_game_command |= (unsigned int)GameCommand::right;
-                    break;
-                case GLFW_KEY_SPACE:
-                    m_game_command |= (unsigned int)GameCommand::jump;
-                    break;
-                case GLFW_KEY_LEFT_CONTROL:
-                    m_game_command |= (unsigned int)GameCommand::squat;
-                    break;
-                case GLFW_KEY_LEFT_ALT: {
-                    std::shared_ptr<WindowSystem> window_system = g_runtime_global_context.m_window_system;
-                    window_system->setFocusMode(!window_system->getFocusMode());
-                }
-                break;
-                case GLFW_KEY_LEFT_SHIFT:
-                    m_game_command |= (unsigned int)GameCommand::sprint;
-                    break;
-                case GLFW_KEY_F:
-                    m_game_command ^= (unsigned int)GameCommand::free_carema;
-                    break;
-                default:
-                    break;
-            }
+            m_game_command |= (1 << (unsigned int) cmd);
         }
         else if (action == GLFW_RELEASE)
         {
-            switch (key)
-            {
-                case GLFW_KEY_ESCAPE:
-                    // close();
-                    break;
-                case GLFW_KEY_R:
-                    break;
-                case GLFW_KEY_W:
-                    m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::forward);
-                    break;
-                case GLFW_KEY_S:
-                    m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::backward);
-                    break;
-                case GLFW_KEY_A:
-                    m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::left);
-                    break;
-                case GLFW_KEY_D:
-                    m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::right);
-                    break;
-                case GLFW_KEY_LEFT_CONTROL:
-                    m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::squat);
-                    break;
-                case GLFW_KEY_LEFT_SHIFT:
-                    m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::sprint);
-                    break;
-                default:
-                    break;
-            }
+            m_game_command &= (1 << (unsigned int) cmd);
         }
     }
 
@@ -139,6 +110,9 @@ namespace Piccolo
 
     void InputSystem::initialize()
     {
+        initKeymap();
+        initGamepadMap();
+        
         std::shared_ptr<WindowSystem> window_system = g_runtime_global_context.m_window_system;
         ASSERT(window_system);
 
@@ -158,13 +132,13 @@ namespace Piccolo
         clear();
 
         std::shared_ptr<WindowSystem> window_system = g_runtime_global_context.m_window_system;
-        if (window_system->getFocusMode())
-        {
-            m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::invalid);
-        }
-        else
-        {
-            m_game_command |= (unsigned int)GameCommand::invalid;
-        }
+        // if (window_system->getFocusMode())
+        // {
+        //     m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::invalid);
+        // }
+        // else
+        // {
+        //     m_game_command |= (unsigned int)GameCommand::invalid;
+        // }
     }
 } // namespace Piccolo

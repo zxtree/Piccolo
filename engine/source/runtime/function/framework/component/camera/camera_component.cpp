@@ -150,7 +150,7 @@ namespace Piccolo
     void CameraComponent::tickFreeCamera(float delta_time)
     {
         unsigned int command = g_runtime_global_context.m_input_system->getGameCommand();
-        if (command >= (unsigned int)GameCommand::invalid) return;
+        if (command >= (unsigned int)GameCommand::INVALID) return;
 
         std::shared_ptr<Level> current_level = g_runtime_global_context.m_world_manager->getCurrentActiveLevel().lock();
         std::shared_ptr<Character> current_character = current_level->getCurrentActiveCharacter().lock();
@@ -166,28 +166,28 @@ namespace Piccolo
         m_left = q_yaw * q_pitch * m_left;
         m_up = m_forward.crossProduct(m_left);
 
-        bool has_move_command = ((unsigned int)GameCommand::forward | (unsigned int)GameCommand::backward |
-                                 (unsigned int)GameCommand::left | (unsigned int)GameCommand::right) & command;
+        bool has_move_command = ((unsigned int)GameCommand::FORWARD | (unsigned int)GameCommand::BACKWARD |
+                                 (unsigned int)GameCommand::LEFT | (unsigned int)GameCommand::RIGHT) & command;
         if (has_move_command)
         {
             Vector3 move_direction = Vector3::ZERO;
 
-            if ((unsigned int)GameCommand::forward & command)
+            if ((unsigned int)GameCommand::FORWARD & command)
             {
                 move_direction += m_forward;
             }
 
-            if ((unsigned int)GameCommand::backward & command)
+            if ((unsigned int)GameCommand::BACKWARD & command)
             {
                 move_direction -= m_forward;
             }
 
-            if ((unsigned int)GameCommand::left & command)
+            if ((unsigned int)GameCommand::LEFT & command)
             {
                 move_direction += m_left;
             }
 
-            if ((unsigned int)GameCommand::right & command)
+            if ((unsigned int)GameCommand::RIGHT & command)
             {
                 move_direction -= m_left;
             }
