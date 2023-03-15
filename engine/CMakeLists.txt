@@ -1,8 +1,4 @@
 
-set(ENGINE_ROOT_DIR "${PICCOLO_ROOT_DIR}/engine")
-set(THIRD_PARTY_DIR "${ENGINE_ROOT_DIR}/3rdparty")
-set(ENGINE_ASSET_DIR "/asset")
-
 set(DEPLOY_CONFIG_DIR "configs/deployment")
 set(DEVELOP_CONFIG_DIR "configs/development")
 
@@ -16,16 +12,10 @@ if(NOT WIN32)
   endif()
 endif()
 
-if(ENABLE_PHYSICS_DEBUG_RENDERER)
-  set(JOLT_ASSET_DIR "/jolt-asset")
-endif()
-
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_options("/MP")
     set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT PiccoloEditor)
 endif()
-
-set(vulkan_include ${THIRD_PARTY_DIR}/VulkanSDK/include)
 
 if(WIN32)
     set(vulkan_lib ${THIRD_PARTY_DIR}/VulkanSDK/lib/Win32/vulkan-1.lib)
@@ -46,20 +36,14 @@ else()
   message(FATAL_ERROR "Unknown Platform")
 endif()
 
+##add_subdirectory(3rdparty)
 
-set(SHADER_COMPILE_TARGET PiccoloShaderCompile)
-add_subdirectory(shader)
-
-add_subdirectory(3rdparty)
-
-add_subdirectory(source/runtime)
-add_subdirectory(source/editor)
-add_subdirectory(source/meta_parser)
-add_subdirectory(source/game)
-#add_subdirectory(source/test)
+add_subdirectory(src/runtime)
+## add_subdirectory(src/editor)
+add_subdirectory(src/meta_parser)
 
 set(CODEGEN_TARGET "PiccoloPreCompile")
-include(source/precompile/precompile.cmake)
+include(src/precompile/precompile.cmake)
 set_target_properties("${CODEGEN_TARGET}" PROPERTIES FOLDER "Engine" )
 
 add_dependencies(PiccoloRuntime "${CODEGEN_TARGET}")

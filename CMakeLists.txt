@@ -20,5 +20,21 @@ set(PICCOLO_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(CMAKE_INSTALL_PREFIX "${PICCOLO_ROOT_DIR}/bin")
 set(BINARY_ROOT_DIR "${CMAKE_INSTALL_PREFIX}/")
 
+set(ENGINE_ROOT_DIR "${PICCOLO_ROOT_DIR}/engine")
+set(THIRD_PARTY_DIR "${PICCOLO_ROOT_DIR}/3rdparty")
+set(ASSETS_DIR "${PICCOLO_ROOT_DIR}/assets")
+set(SHADER_COMPILE_TARGET PiccoloShaderCompile)
+
+if(ENABLE_PHYSICS_DEBUG_RENDERER)
+  set(JOLT_ASSET_DIR "${ASSETS_DIR}/jolt-asset")
+endif()
+
+set(vulkan_include ${THIRD_PARTY_DIR}/VulkanSDK/include)
+
+add_subdirectory(3rdparty)
+add_subdirectory(assets/shader)
 
 add_subdirectory(engine)
+
+add_subdirectory(game)
+## add_subdirectory(editor)

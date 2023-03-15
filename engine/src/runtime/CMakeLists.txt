@@ -62,12 +62,12 @@ target_include_directories(
 add_dependencies(${TARGET_NAME} ${SHADER_COMPILE_TARGET})
 target_include_directories(
   ${TARGET_NAME}
-  PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/shader/generated/cpp>)
+  PUBLIC $<BUILD_INTERFACE:${ASSETS_DIR}/shader/generated/cpp>)
 
 
 target_include_directories(
   ${TARGET_NAME} 
-  PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/source>
+  PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/src>
   $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
 
@@ -85,13 +85,13 @@ target_include_directories(
 
 target_include_directories(
   ${TARGET_NAME} 
-  PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/source/runtime>
+  PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/src/runtime>
   $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
 
 target_include_directories(
   ${TARGET_NAME} 
-  PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/source/runtime/function/render/include>
+  PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/src/runtime/function/render/include>
   $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
 
