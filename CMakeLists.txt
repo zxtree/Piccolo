@@ -20,6 +20,9 @@ set(PICCOLO_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(CMAKE_INSTALL_PREFIX "${PICCOLO_ROOT_DIR}/bin")
 set(BINARY_ROOT_DIR "${CMAKE_INSTALL_PREFIX}/")
 
+set(DEPLOY_CONFIG_DIR "configs/deployment")
+set(DEVELOP_CONFIG_DIR "configs/development")
+
 set(ENGINE_ROOT_DIR "${PICCOLO_ROOT_DIR}/engine")
 set(THIRD_PARTY_DIR "${PICCOLO_ROOT_DIR}/3rdparty")
 set(ASSETS_DIR "${PICCOLO_ROOT_DIR}/assets")
@@ -35,6 +38,5 @@ add_subdirectory(3rdparty)
 add_subdirectory(assets/shader)
 
 add_subdirectory(engine)
-
+add_subdirectory(editor)
 add_subdirectory(game)
-## add_subdirectory(editor)

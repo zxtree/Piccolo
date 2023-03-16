@@ -1,7 +1,4 @@
 
-set(DEPLOY_CONFIG_DIR "configs/deployment")
-set(DEVELOP_CONFIG_DIR "configs/development")
-
 option(ENABLE_PHYSICS_DEBUG_RENDERER "Enable Physics Debug Renderer" OFF)
 
 # only support physics debug render at windows platform
