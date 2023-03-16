@@ -63,3 +63,19 @@ if(NOT TARGET Jolt)
     endif()
 
 endif()
+
+if(NOT TARGET kcp)
+    add_subdirectory(kcp)
+    set_target_properties(kcp PROPERTIES FOLDER ${third_party_folder}/kcp)
+endif()
+
+if(NOT TARGET protobuf)
+    option(protobuf_WITH_ZLIB "" OFF)
+    add_subdirectory(protobuf)
+    set_target_properties(protobuf PROPERTIES FOLDER ${third_party_folder}/protobuf)
+endif()
+
+if(NOT TARGET quickjs)
+    add_custom_target(quickjs COMMAND make run WORKING_DIRECTORY ${third_party_folder}/quickjs)
+    set_target_properties(quickjs PROPERTIES FOLDER ${third_party_folder}/quickjs)
+endif()
