@@ -5,7 +5,6 @@
 
 namespace Piccolo
 {
-    class LogSystem;
     class InputSystem;
     class PhysicsManager;
     class FileSystem;
@@ -30,7 +29,6 @@ namespace Piccolo
         void shutdownSystems();
 
     public:
-        std::shared_ptr<LogSystem>         m_logger_system;
         std::shared_ptr<InputSystem>       m_input_system;
         std::shared_ptr<FileSystem>        m_file_system;
         std::shared_ptr<AssetManager>      m_asset_manager;

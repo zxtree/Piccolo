@@ -61,5 +61,6 @@ add_subdirectory(assets/shader)
 add_subdirectory(3rdparty)
 
 add_subdirectory(engine)
+add_subdirectory(test)
 # add_subdirectory(editor)
-# add_subdirectory(game)
+add_subdirectory(game)

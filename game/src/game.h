@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine.h"
+#include "runtime/network/network.h"
 
 namespace Piccolo
 {
@@ -18,5 +19,7 @@ namespace Piccolo
         void run();
 
         PiccoloEngine* m_engine_runtime;
+
+        NetNode net_node;
     };
 }

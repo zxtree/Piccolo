@@ -92,6 +92,12 @@ target_include_directories(
   $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
 
+target_include_directories(
+  ${TARGET_NAME} 
+  PUBLIC $<BUILD_INTERFACE:${THIRD_PARTY_DIR}>
+  $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
+)
+
 # ---- Create an installable target ----
 # this allows users to install and find the library via `find_package()`.
 

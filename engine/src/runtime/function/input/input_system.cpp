@@ -61,7 +61,7 @@ namespace Piccolo
         //m_game_command &= (k_complement_control_command ^ (unsigned int)GameCommand::jump);
 
         GameCommand cmd = m_keymap[key];
-        LOG_DEBUG("on key game command: {}", cmd);
+
         if (action == GLFW_PRESS)
         {
             m_game_command |= (1 << (unsigned int) cmd);

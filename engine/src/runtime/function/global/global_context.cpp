@@ -1,7 +1,5 @@
 #include "runtime/function/global/global_context.h"
 
-#include "core/log/log_system.h"
-
 #include "runtime/engine.h"
 
 #include "runtime/platform/file_service/file_service.h"
@@ -29,8 +27,6 @@ namespace Piccolo
         m_config_manager->initialize(config_file_path);
 
         m_file_system = std::make_shared<FileSystem>();
-
-        m_logger_system = std::make_shared<LogSystem>();
 
         m_asset_manager = std::make_shared<AssetManager>();
 
@@ -82,8 +78,6 @@ namespace Piccolo
         m_input_system.reset();
 
         m_asset_manager.reset();
-
-        m_logger_system.reset();
 
         m_file_system.reset();
 
