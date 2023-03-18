@@ -432,3 +432,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 imgui.ini
+
+assets/shader/generated/

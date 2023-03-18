@@ -70,9 +70,10 @@ if(NOT TARGET kcp)
 endif()
 
 if(NOT TARGET protobuf)
-    option(protobuf_WITH_ZLIB "" OFF)
+    option(protobuf_WITH_ZLIB "Build with zlib support" OFF)
+    
     add_subdirectory(protobuf)
-    set_target_properties(protobuf PROPERTIES FOLDER ${third_party_folder}/protobuf)
+    ##set_target_properties(protobuf PROPERTIES FOLDER ${third_party_folder}/protobuf)
 endif()
 
 if(NOT TARGET quickjs)

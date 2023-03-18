@@ -64,14 +64,11 @@ target_include_directories(
   ${TARGET_NAME}
   PUBLIC $<BUILD_INTERFACE:${ASSETS_DIR}/shader/generated/cpp>)
 
-
 target_include_directories(
   ${TARGET_NAME} 
   PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/src>
   $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
-
-
 
 target_include_directories(
   ${TARGET_NAME} 

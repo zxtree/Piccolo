@@ -35,7 +35,7 @@ compile_shader(
   "${GENERATED_SHADER_FOLDER}"
   "${glslangValidator_executable}")
 
-set_target_properties("${TARGET_NAME}" PROPERTIES FOLDER "Assets" )
+#set_target_properties("${TARGET_NAME}" PROPERTIES FOLDER "assets/shader" )
 
 # For each shader, we create a header file
 # foreach(SHADER ${shaders})
