@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include "kcp/ikcp.h"
-
 namespace Piccolo
 {
     struct NetNodeInfo
@@ -23,9 +21,9 @@ namespace Piccolo
 
         // std::vector<NetNode> node_list;
 
-        ikcpcb* m_kcpcb;
-
         void init();
+
+        void update();
 
         // void registerSelf(NetNodeInfo remote);
 

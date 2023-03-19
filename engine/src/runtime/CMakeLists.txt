@@ -5,10 +5,10 @@ set(TARGET_NAME PiccoloRuntime)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(JSON_INCLUDE ${THIRD_PARTY_DIR}/json11)
+# set(JSON_INCLUDE ${VCPKG_INCLUDE_DIR}/json11)
 
-add_library(json11 ${JSON_INCLUDE}/json11.cpp)
-set_target_properties(json11 PROPERTIES FOLDER "ThirdParty/json11")
+# add_library(json11 ${JSON_INCLUDE}/json11.cpp)
+# set_target_properties(json11 PROPERTIES FOLDER "ThirdParty/json11")
 # ---- Add source files ----
 
 # Note: globbing sources is considered bad practice as CMake's generators may not detect new files
@@ -41,19 +41,23 @@ target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
 # Link dependencies    
-target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${TARGET_NAME} PRIVATE tinyobjloader stb)
-target_link_libraries(${TARGET_NAME} PUBLIC glfw)
+# target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog)
+# target_link_libraries(${TARGET_NAME} PRIVATE tinyobjloader stb)
+# target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC imgui)
-target_link_libraries(${TARGET_NAME} PUBLIC Jolt)
-#target_link_libraries(${TARGET_NAME} PUBLIC lua_static sol2)
+# target_link_libraries(${TARGET_NAME} PUBLIC Jolt)
 target_link_libraries(${TARGET_NAME} PUBLIC ${vulkan_lib})
-target_link_libraries(${TARGET_NAME} PRIVATE $<BUILD_INTERFACE:json11>)
+# target_link_libraries(${TARGET_NAME} PRIVATE $<BUILD_INTERFACE:json11>)
+target_link_directories(${TARGET_NAME} PUBLIC ${VCPKG_LIB_DIR})
 
 if(ENABLE_PHYSICS_DEBUG_RENDERER)
   add_compile_definitions(ENABLE_PHYSICS_DEBUG_RENDERER)
   target_link_libraries(${TARGET_NAME} PUBLIC TestFramework d3d12.lib shcore.lib)
 endif()
+
+target_include_directories(
+  ${TARGET_NAME}
+  PUBLIC $<BUILD_INTERFACE:${THIRD_PARTY_DIR}/imgui>)
 
 target_include_directories(
   ${TARGET_NAME}
@@ -70,10 +74,6 @@ target_include_directories(
   $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
 
-target_include_directories(
-  ${TARGET_NAME} 
-  PUBLIC $<BUILD_INTERFACE:${JSON_INCLUDE}>
-)
 
 target_include_directories(
   ${TARGET_NAME} 
@@ -89,12 +89,6 @@ target_include_directories(
 target_include_directories(
   ${TARGET_NAME} 
   PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/src/runtime/function/render/include>
-  $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
-)
-
-target_include_directories(
-  ${TARGET_NAME} 
-  PUBLIC $<BUILD_INTERFACE:${THIRD_PARTY_DIR}>
   $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
 
