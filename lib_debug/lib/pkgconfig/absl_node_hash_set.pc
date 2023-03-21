@@ -1,0 +1,12 @@
+prefix=E:/projects/Piccolo/lib_debug
+exec_prefix=${prefix}
+libdir=E:/projects/Piccolo/lib_debug/lib
+includedir=E:/projects/Piccolo/lib_debug/include
+
+Name: absl_node_hash_set
+Description: Abseil node_hash_set library
+URL: https://abseil.io/
+Version: 20230125
+Requires: absl_core_headers = 20230125, absl_hash_function_defaults = 20230125, absl_node_slot_policy = 20230125, absl_raw_hash_set = 20230125, absl_algorithm_container = 20230125, absl_memory = 20230125
+Libs: -L${libdir}  
+Cflags: -I${includedir} /W3 /bigobj /wd4005 /wd4068 /wd4180 /wd4244 /wd4267 /wd4503 /wd4800 /DNOMINMAX /DWIN32_LEAN_AND_MEAN /D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS /D_ENABLE_EXTENDED_ALIGNED_STORAGE

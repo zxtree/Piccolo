@@ -1,0 +1,13 @@
+prefix=E:/projects/Piccolo/lib_release
+exec_prefix=${prefix}
+includedir=E:/projects/Piccolo/lib_release/include
+libdir=E:/projects/Piccolo/lib_release/lib
+
+Name: GLFW
+Description: A multi-platform library for OpenGL, window and input
+Version: 3.3.9
+URL: https://www.glfw.org/
+Requires.private: 
+Libs: -L${libdir} -lglfw3
+Libs.private:  -lgdi32
+Cflags: -I${includedir}

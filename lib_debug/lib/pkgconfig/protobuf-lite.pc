@@ -1,0 +1,11 @@
+prefix=E:/projects/Piccolo/lib_debug
+exec_prefix=E:/projects/Piccolo/lib_debug
+libdir=E:/projects/Piccolo/lib_debug/lib
+includedir=E:/projects/Piccolo/lib_debug/include
+
+Name: Protocol Buffers
+Description: Google's Data Interchange Format
+Version: 22.2.0
+Libs: -L${libdir} -lprotobuf-lite -pthread
+Cflags: -I${includedir}
+Conflicts: protobuf

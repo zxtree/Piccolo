@@ -1,0 +1,13 @@
+prefix=E:/projects/Piccolo/lib_release
+exec_prefix=${prefix}
+libdir=E:/projects/Piccolo/lib_release/lib
+includedir=E:/projects/Piccolo/lib_release/include
+LIBUV_STATIC=-L${libdir} -l:libuv.a -lpsapi -luser32 -ladvapi32 -liphlpapi -luserenv -lws2_32
+
+Name: libuv
+Version: 1.44.3
+Description: multi-platform support library with a focus on asynchronous I/O.
+URL: http://libuv.org/
+
+Libs: -L${libdir} -luv -lpsapi -luser32 -ladvapi32 -liphlpapi -luserenv -lws2_32
+Cflags: -I${includedir}

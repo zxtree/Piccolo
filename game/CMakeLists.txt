@@ -14,18 +14,10 @@ set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "Game")
 
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
-link_directories(${VCPKG_LIB_DIR})
-message(${VCPKG_LIB_DIR})
-target_link_directories(${TARGET_NAME} PUBLIC ${VCPKG_LIB_DIR})
-# target_link_libraries(${TARGET_NAME} PUBLIC ${VCPKG_LIB_DIR}/fmt.lib)
-# target_link_libraries(${TARGET_NAME} PUBLIC ${VCPKG_LIB_DIR}/Jolt.lib)
 target_link_libraries(${TARGET_NAME} PUBLIC PiccoloRuntime)
-#target_link_libraries(${TARGET_NAME} PUBLIC ${VCPKG_LIB_DIR}/Jolt.lib)
-#target_link_libraries(${TARGET_NAME} PUBLIC imgui)
 
 set(POST_BUILD_COMMANDS
   COMMAND ${CMAKE_COMMAND} -E make_directory "${BINARY_ROOT_DIR}"
-
   COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_FILE_DIR:${TARGET_NAME}>/" "${BINARY_ROOT_DIR}"
 )
 

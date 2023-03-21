@@ -7,6 +7,9 @@ file(GLOB imgui_impl CONFIGURE_DEPENDS
 "${imgui_SOURCE_DIR_}/backends/imgui_impl_vulkan.cpp" 
 "${imgui_SOURCE_DIR_}/backends/imgui_impl_vulkan.h")
 add_library(imgui STATIC ${imgui_sources} ${imgui_impl})
+
+target_include_directories(imgui PUBLIC E:/projects/Piccolo/lib_debug/include)
+
 target_include_directories(imgui PUBLIC $<BUILD_INTERFACE:${imgui_SOURCE_DIR_}>)
 target_include_directories(imgui PUBLIC $<BUILD_INTERFACE:${vulkan_include}>)
 target_link_libraries(imgui PUBLIC glfw ${vulkan_lib})

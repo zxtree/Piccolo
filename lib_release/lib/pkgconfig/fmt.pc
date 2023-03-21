@@ -1,0 +1,11 @@
+prefix=E:/projects/Piccolo/lib_release
+exec_prefix=E:/projects/Piccolo/lib_release
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: fmt
+Description: A modern formatting library
+Version: 9.1.1
+Libs: -L${libdir} -lfmt
+Cflags: -I${includedir}
+

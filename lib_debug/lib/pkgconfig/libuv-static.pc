@@ -1,0 +1,12 @@
+prefix=E:/projects/Piccolo/lib_debug
+exec_prefix=${prefix}
+libdir=E:/projects/Piccolo/lib_debug/lib
+includedir=E:/projects/Piccolo/lib_debug/include
+
+Name: libuv-static
+Version: 1.44.3
+Description: multi-platform support library with a focus on asynchronous I/O.
+URL: http://libuv.org/
+
+Libs: -L${libdir} -l:libuv.a -lpsapi -luser32 -ladvapi32 -liphlpapi -luserenv -lws2_32
+Cflags: -I${includedir}
