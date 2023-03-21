@@ -45,10 +45,10 @@ set(glslangValidator_executable ${THIRD_PARTY_DIR}/VulkanSDK/bin/Win32/glslangVa
 add_compile_definitions("PICCOLO_VK_LAYER_PATH=${THIRD_PARTY_DIR}/VulkanSDK/bin/Win32")
 
 set(SHADER_COMPILE_TARGET PiccoloShaderCompile)
-add_subdirectory(assets/shader)
-add_subdirectory(3rdparty)
+#add_subdirectory(assets/shader)
+#add_subdirectory(3rdparty)
 
-add_subdirectory(engine)
+#add_subdirectory(engine)
 add_subdirectory(test)
 # add_subdirectory(editor)
-add_subdirectory(game)
+#add_subdirectory(game)

@@ -19,8 +19,9 @@ set_target_properties(${TARGET_CLIENT} PROPERTIES CXX_STANDARD 17 OUTPUT_NAME "T
 target_compile_options(${TARGET_SERVER} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 target_compile_options(${TARGET_CLIENT} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
-target_link_libraries(${TARGET_SERVER} PUBLIC PiccoloRuntime)
-target_link_libraries(${TARGET_CLIENT} PUBLIC PiccoloRuntime)
+include_directories(${ENGINE_ROOT_DIR}/src)
+# target_link_libraries(${TARGET_SERVER} PUBLIC PiccoloRuntime)
+# target_link_libraries(${TARGET_CLIENT} PUBLIC PiccoloRuntime)
 
 set(POST_BUILD_COMMANDS
   COMMAND ${CMAKE_COMMAND} -E make_directory "${BINARY_ROOT_DIR}"
