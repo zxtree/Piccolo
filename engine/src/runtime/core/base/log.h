@@ -25,5 +25,8 @@ extern void init_log();
 #define LOG_ERROR(...) \
     LOGGER()->error("[" + std::string(__FUNCTION__) + "]" + __VA_ARGS__);
 
+#define LOG_SYS_ERR(STR, CODE) \
+    LOGGER()->error("[" + std::string(__FUNCTION__) + "]" + STR + std::system_category().message(CODE));
+
 #define LOG_FATAL(...) \
     LOGGER()->critical("[" + std::string(__FUNCTION__) + "]" + __VA_ARGS__);

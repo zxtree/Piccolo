@@ -8,8 +8,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "runtime/network/network.h"
+
 // Need to link with Ws2_32.lib
-#pragma comment (lib, "Ws2_32.lib")
+// #pragma comment (lib, "Ws2_32.lib")
 // #pragma comment (lib, "Mswsock.lib")
 
 #define DEFAULT_BUFLEN 512
@@ -17,7 +19,19 @@
 
 //#include "runtime/core/base/log.h"
 
-int __cdecl main(void) 
+using namespace Piccolo;
+
+int main(void) 
+{
+    NetNode node;
+    node.init();
+
+    node.accept1();
+
+    node.event();
+}
+
+int tcplisten(void) 
 {
     WSADATA wsaData;
     int iResult;

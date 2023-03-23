@@ -5,7 +5,7 @@ project(Piccolo VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_SHARED_LIBS OFF)
-# set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 include(CMakeDependentOption)
 
@@ -36,7 +36,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_options("/MP" "$<$<CONFIG:DEBUG>:/MDd>" "$<$<CONFIG:RELEASE>:/MD>")
 endif()
 
-link_directories($<$<CONFIG:DEBUG>:${PICCOLO_ROOT_DIR}/lib_debug/lib> $<$<CONFIG:RELEASE>:${PICCOLO_ROOT_DIR}/lib_release/lib>)
+set(LIB_DIR_DEBUG ${PICCOLO_ROOT_DIR}/lib_debug/lib)
+set(LIB_DIR_RELEASE ${PICCOLO_ROOT_DIR}/lib_release/lib)
+link_directories($<$<CONFIG:DEBUG>:${LIB_DIR_DEBUG}> $<$<CONFIG:RELEASE>:${LIB_DIR_RELEASE}>)
 include_directories($<$<CONFIG:DEBUG>:${PICCOLO_ROOT_DIR}/lib_debug/include> $<$<CONFIG:RELEASE>:${PICCOLO_ROOT_DIR}/lib_release/include>)
 
 set(vulkan_include ${THIRD_PARTY_DIR}/VulkanSDK/include)
@@ -45,10 +47,10 @@ set(glslangValidator_executable ${THIRD_PARTY_DIR}/VulkanSDK/bin/Win32/glslangVa
 add_compile_definitions("PICCOLO_VK_LAYER_PATH=${THIRD_PARTY_DIR}/VulkanSDK/bin/Win32")
 
 set(SHADER_COMPILE_TARGET PiccoloShaderCompile)
-#add_subdirectory(assets/shader)
-#add_subdirectory(3rdparty)
+add_subdirectory(assets/shader)
+add_subdirectory(3rdparty)
 
-#add_subdirectory(engine)
+add_subdirectory(engine)
 add_subdirectory(test)
 # add_subdirectory(editor)
-#add_subdirectory(game)
+add_subdirectory(game)

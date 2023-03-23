@@ -32,4 +32,4 @@ add_custom_command(TARGET ${TARGET_NAME} ${POST_BUILD_COMMANDS})
 
 #precompile
 #set global vari used by precompile
-set(PICCOLO_GAME_HEADS “${GAME_HEADERS}” PARENT_SCOPE)
+set(PICCOLO_GAME_HEADS "${GAME_HEADERS}" PARENT_SCOPE)

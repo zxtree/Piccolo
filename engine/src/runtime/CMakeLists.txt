@@ -28,6 +28,7 @@ target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
 # Link dependencies
+target_link_libraries(${TARGET_NAME} PUBLIC ws2_32)
 target_link_libraries(${TARGET_NAME} PUBLIC imgui)
 target_link_libraries(${TARGET_NAME} PUBLIC ${vulkan_lib})
 target_link_libraries(${TARGET_NAME} PUBLIC json11)
@@ -83,6 +84,20 @@ target_include_directories(
 # the location where the project's version header will be placed should match the project's regular
 # header paths
 string(TOLOWER ${TARGET_NAME}/version.h VERSION_HEADER_LOCATION)
+
+# if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+# set(POST_BUILD_COMMANDS
+#   COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_FILE_DIR}/${TARGET_NAME}>" ${LIB_DIR_DEBUG}
+# )
+# add_custom_command(TARGET ${TARET_NAME} ${POST_BUILD_COMMANDS})
+# endif()
+# if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+# set(POST_BUILD_COMMANDS
+#   COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_FILE_DIR}/${TARGET_NAME}>" ${LIB_DIR_RELEASE}
+# )
+# add_custom_command(TARGET ${TARET_NAME} ${POST_BUILD_COMMANDS})
+# endif()
+
 
 
 ### precompile
