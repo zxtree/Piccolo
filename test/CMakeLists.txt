@@ -21,7 +21,7 @@ target_compile_options(${TARGET_CLIENT} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC
 
 include_directories(${ENGINE_ROOT_DIR}/src)
 target_link_libraries(${TARGET_SERVER} PUBLIC PiccoloRuntime)
-# target_link_libraries(${TARGET_CLIENT} PUBLIC PiccoloRuntime)
+target_link_libraries(${TARGET_CLIENT} PUBLIC PiccoloRuntime)
 
 set(POST_BUILD_COMMANDS
   COMMAND ${CMAKE_COMMAND} -E make_directory "${BINARY_ROOT_DIR}"

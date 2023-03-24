@@ -1,13 +1,11 @@
-#include <WS2tcpip.h>
-
-#include "runtime/core/base/macro.h"
 #include "runtime/core/base/log.h"
 
 #include "network.h"
+#include <WS2tcpip.h>
 
 namespace Piccolo {
 
-void NetNode::init() {
+int NetNode::init() {
     LOG_DEBUG("net node init");
 
     DWORD iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -17,46 +15,72 @@ void NetNode::init() {
     address.sin_port = htons(17000);
     inet_pton(AF_INET, "127.0.0.1", &address.sin_addr);
 
-    // 初始化 Socket
     unsigned long ul = 1;
     serverSocket = WSASocketW(AF_INET, SOCK_STREAM, 0, nullptr, 0, WSA_FLAG_OVERLAPPED);
     if (INVALID_SOCKET == serverSocket) {
-        DWORD err = WSAGetLastError();
-        LOG_SYS_ERR("FAILED TO CREATE SERVER SOCKET:", err);
+        LOG_ERROR("FAILED TO CREATE SERVER SOCKET:");
         closesocket(serverSocket);
-        exit(err);
+        return WSAGetLastError();
     }
-    // 设置为非阻塞 IO
+    LOG_DEBUG("create serversocket");
+    
     if (SOCKET_ERROR == ioctlsocket(serverSocket, FIONBIO, &ul)) {
-        perror("FAILED TO SET NONBLOCKING SOCKET");
+        LOG_ERROR("FAILED TO SET NONBLOCKING SOCKET");
         closesocket(serverSocket);
-        exit(-2);
+        return WSAGetLastError();
     }
-    if (SOCKET_ERROR == bind(serverSocket, (const struct sockaddr *) &address, sizeof(address))) {
-    perror("FAILED TO BIND ADDRESS");
-        closesocket(serverSocket);
-        exit(-3);
-    }
-    if (SOCKET_ERROR == listen(serverSocket, SOMAXCONN)) {
-        perror("FAILED TO LISTEN SOCKET");
-        closesocket(serverSocket);
-        exit(-4);
-    }
+    LOG_DEBUG("set nonblocking socket");
 
-    isShutdown = false;
+    if (SOCKET_ERROR == bind(serverSocket, (const struct sockaddr *) &address, sizeof(address))) {
+        LOG_ERROR("FAILED TO BIND ADDRESS");
+        closesocket(serverSocket);
+        return WSAGetLastError();
+    }
+    LOG_DEBUG("bind succ");
+
+    if (SOCKET_ERROR == listen(serverSocket, SOMAXCONN)) {
+        LOG_ERROR("FAILED TO LISTEN SOCKET");
+        closesocket(serverSocket);
+        return WSAGetLastError();
+    }
+    LOG_DEBUG("listen succ");
+
     hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, NumberOfThreads);
     if (INVALID_HANDLE_VALUE == hIOCP) {
-        perror("FAILED TO CREATE IOCP HANDLE");
+        LOG_ERROR("FAILED TO CREATE IOCP HANDLE");
         closesocket(serverSocket);
-        exit(-5);
+        return WSAGetLastError();
     }
+    LOG_DEBUG("create complete port");
+
+    for (size_t i = 0; i < NumberOfThreads; i++) {
+        threadGroup.emplace_back(std::thread(&NetNode::event, this));
+    }
+
+    void *lpCompletionKey = nullptr;
+    std::thread acceptThread = std::thread(&NetNode::accept1, this);
+    // getchar();
+    // isShutdown = true;
+
+    for (size_t i = 0; i < NumberOfThreads; i++) {
+        PostQueuedCompletionStatus(hIOCP, -1, (ULONG_PTR) lpCompletionKey, nullptr);
+    }
+    acceptThread.join();
+    for (auto &thread: threadGroup) {
+        thread.join();
+    }
+
+    WSACleanup();
+    return 0;
 }
 
 void NetNode::accept1() {
     while (!isShutdown) {
         SOCKET clientSocket = accept(serverSocket, nullptr, nullptr);
-        if (INVALID_SOCKET == clientSocket) continue;
 
+        if (INVALID_SOCKET == clientSocket) continue;
+        LOG_DEBUG("accept");
+        
         unsigned long ul = 1;
         if (SOCKET_ERROR == ioctlsocket(clientSocket, FIONBIO, &ul)) {
             shutdown(clientSocket, SD_BOTH);
@@ -77,17 +101,19 @@ void NetNode::accept1() {
         ioContext->type = IOType::Read;
 
         auto rt = WSARecv(clientSocket, &ioContext->wsaBuf, 1, &nBytes, &dwFlags, &ioContext->overlapped, nullptr);
+        LOG_DEBUG("accept recv");
         auto err = WSAGetLastError();
         if (SOCKET_ERROR == rt && ERROR_IO_PENDING != err) {
 
-            shutdown(clientSocket, SD_BOTH);
-            closesocket(clientSocket);
+            //shutdown(clientSocket, SD_BOTH);
+            //closesocket(clientSocket);
             delete ioContext;
         }
     }
 }
 
 void NetNode::event() {
+    LOG_DEBUG("event");
     IOContext *ioContext = nullptr;
     DWORD lpNumberOfBytesTransferred = 0;
     void *lpCompletionKey = nullptr;
@@ -104,11 +130,17 @@ void NetNode::event() {
                 INFINITE);
 
         if (!bRt) continue;
+        
+        LOG_DEBUG("lb number of bytes transferred: {}", lpNumberOfBytesTransferred);
 
-        if (lpNumberOfBytesTransferred == -1) break;
+        if (lpNumberOfBytesTransferred == -1) {
+            LOG_DEBUG("lb number of bytes transferred = -1");
+            continue;;
+        }
 
         if (lpNumberOfBytesTransferred == 0) continue;
-
+        
+        LOG_DEBUG("event get queued complete port2");
         ioContext->nBytes = lpNumberOfBytesTransferred;
         switch (ioContext->type) {
             case IOType::Read: {
@@ -126,9 +158,14 @@ void NetNode::event() {
                     delete ioContext;
                     ioContext = nullptr;
                 } else {
-                    setbuf(stdout, nullptr);
-                    puts(ioContext->buffer);
-                    fflush(stdout);
+                    LOG_DEBUG("event wsarecv");
+                    LOG_INFO("event recv buf: {}", ioContext->buffer);
+                    strcat(ioContext->buffer, "send");
+                    int rc = WSASend(ioContext->socket, &ioContext->wsaBuf, 1, &lpNumberOfBytesTransferred, dwFlags, &(ioContext->overlapped), NULL);
+                    if(rc == SOCKET_ERROR) {
+                        LOG_ERROR("event send error: {}", WSAGetLastError());
+                    }
+                    LOG_DEBUG("event send: {}", ioContext->buffer);
                     closesocket(ioContext->socket);
                     delete ioContext;
                     ioContext = nullptr;
@@ -136,10 +173,12 @@ void NetNode::event() {
                 break;
             }
             case IOType::Write: {
+                LOG_ERROR("event write");
                 break;
             }
         }
     }
+    LOG_ERROR("event end");
 }
 
 void NetNode::update() {

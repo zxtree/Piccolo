@@ -26,9 +26,9 @@ int main(void)
     NetNode node;
     node.init();
 
-    node.accept1();
+    // node.accept1();
 
-    node.event();
+    // node.event();
 }
 
 int tcplisten(void) 

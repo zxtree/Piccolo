@@ -1,7 +1,8 @@
 #pragma once
-
-#include <vector>
 #include <WinSock2.h>
+#include <atomic>
+#include <vector>
+#include <thread>
 
 namespace Piccolo
 {
@@ -40,11 +41,13 @@ public:
     // std::vector<NetNode> node_list;
 
     WSAData wsaData;
-    bool isShutdown = true;
+    std::atomic_bool isShutdown = false;
     SOCKET serverSocket;
     HANDLE hIOCP;
-    DWORD NumberOfThreads = 4;
-    void init();
+    DWORD NumberOfThreads = 1;
+    std::vector<std::thread> threadGroup;
+
+    int init();
 
     void accept1();
 

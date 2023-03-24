@@ -5,13 +5,14 @@
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <system_error>
 
+#include "runtime/core/base/log.h"
 
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
-
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "17000"
@@ -93,10 +94,10 @@ int __cdecl main(int argc, char **argv)
         return 1;
     }
 
-    printf("Bytes Sent: %ld\n", iResult);
+    LOG_DEBUG("Bytes Sent: {}", iResult);
 
     // shutdown the connection since no more data will be sent
-    iResult = shutdown(ConnectSocket, SD_SEND);
+    // iResult = shutdown(ConnectSocket, SD_SEND);
     if (iResult == SOCKET_ERROR) {
         printf("shutdown failed with error: %d\n", WSAGetLastError());
         closesocket(ConnectSocket);
@@ -104,6 +105,7 @@ int __cdecl main(int argc, char **argv)
         return 1;
     }
 
+    iResult = 1;
     // Receive until the peer closes the connection
     do {
 
@@ -113,7 +115,7 @@ int __cdecl main(int argc, char **argv)
         else if ( iResult == 0 )
             printf("Connection closed\n");
         else
-            printf("recv failed with error: %d\n", WSAGetLastError());
+            LOG_ERROR("recv failed with error: {}", std::system_category().message(WSAGetLastError()));
 
     } while( iResult > 0 );
 
