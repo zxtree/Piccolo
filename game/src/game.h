@@ -19,7 +19,5 @@ namespace Piccolo
         void run();
 
         PiccoloEngine* m_engine_runtime;
-
-        NetNode net_node;
     };
 }

@@ -31,15 +31,15 @@ int __cdecl main(int argc, char **argv)
     
     // Validate the parameters
     if (argc != 2) {
-        printf("usage: %s server-name\n", argv[0]);
+        LOG_ERROR("usage: {} server-name", argv[0]);
         return 1;
     }
 
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (iResult != 0) {
-        printf("WSAStartup failed with error: %d\n", iResult);
-        return 1;
+        LOG_ERROR("WSAStartup failed with error: {}", iResult);
+        return iResult;
     }
 
     ZeroMemory( &hints, sizeof(hints) );
@@ -50,9 +50,9 @@ int __cdecl main(int argc, char **argv)
     // Resolve the server address and port
     iResult = getaddrinfo(argv[1], DEFAULT_PORT, &hints, &result);
     if ( iResult != 0 ) {
-        printf("getaddrinfo failed with error: %d\n", iResult);
+        LOG_ERROR("getaddrinfo failed with error: {}", iResult);
         WSACleanup();
-        return 1;
+        return iResult;
     }
 
     // Attempt to connect to an address until one succeeds
@@ -62,9 +62,10 @@ int __cdecl main(int argc, char **argv)
         ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype, 
             ptr->ai_protocol);
         if (ConnectSocket == INVALID_SOCKET) {
-            printf("socket failed with error: %ld\n", WSAGetLastError());
+            int err = WSAGetLastError();
+            LOG_ERROR("socket failed with error: {}", err);
             WSACleanup();
-            return 1;
+            return err;
         }
 
         // Connect to server.
@@ -80,7 +81,7 @@ int __cdecl main(int argc, char **argv)
     freeaddrinfo(result);
 
     if (ConnectSocket == INVALID_SOCKET) {
-        printf("Unable to connect to server!\n");
+        LOG_ERROR("Unable to connect to server!");
         WSACleanup();
         return 1;
     }
@@ -88,21 +89,23 @@ int __cdecl main(int argc, char **argv)
     // Send an initial buffer
     iResult = send( ConnectSocket, sendbuf, (int)strlen(sendbuf), 0 );
     if (iResult == SOCKET_ERROR) {
-        printf("send failed with error: %d\n", WSAGetLastError());
+        int err = WSAGetLastError();
+        LOG_ERROR("send failed with error: {}", err);
         closesocket(ConnectSocket);
         WSACleanup();
-        return 1;
+        return err;
     }
 
     LOG_DEBUG("Bytes Sent: {}", iResult);
 
     // shutdown the connection since no more data will be sent
-    // iResult = shutdown(ConnectSocket, SD_SEND);
+    // iResult = shutdown(ConnectSocket, SD_BOTH);
     if (iResult == SOCKET_ERROR) {
-        printf("shutdown failed with error: %d\n", WSAGetLastError());
+        int err = WSAGetLastError();
+        LOG_ERROR("shutdown failed with error: {}", err);
         closesocket(ConnectSocket);
         WSACleanup();
-        return 1;
+        return err;
     }
 
     iResult = 1;
@@ -110,13 +113,19 @@ int __cdecl main(int argc, char **argv)
     do {
 
         iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-        if ( iResult > 0 )
-            printf("Bytes received: %d\n", iResult);
-        else if ( iResult == 0 )
-            printf("Connection closed\n");
-        else
-            LOG_ERROR("recv failed with error: {}", std::system_category().message(WSAGetLastError()));
+        if ( iResult > 0 ) {
+            LOG_DEBUG("Bytes received: {}", iResult);
+            LOG_INFO("recv: {}", std::string(recvbuf, iResult));
+        }
+        else if ( iResult == 0 ) {
+            LOG_DEBUG("Connection closed");
+        }
+        else {
+            int err = WSAGetLastError();
+            LOG_ERROR("recv failed with error: {}:{}", err, std::system_category().message(err));
+        }
 
+        //shutdown(ConnectSocket, SD_BOTH);
     } while( iResult > 0 );
 
     // cleanup

@@ -11,7 +11,7 @@ void init_log()
 {
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_level(spdlog::level::trace);
-    console_sink->set_pattern("[%H:%M:%S.%e][%^%l%$]%v");
+    console_sink->set_pattern("[%H:%M:%S.%e][%^%l%$][%t]%v");
 
     const spdlog::sinks_init_list sink_list = {console_sink};
 

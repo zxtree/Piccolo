@@ -19,8 +19,6 @@ namespace Piccolo
 
         g_is_editor_mode = false;
         m_engine_runtime = engine_runtime;
-
-        net_node.init();
     }
 
     void PiccoloGame::clear() {}

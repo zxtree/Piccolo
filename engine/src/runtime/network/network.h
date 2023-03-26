@@ -1,65 +1,23 @@
 #pragma once
-#include <WinSock2.h>
-#include <atomic>
-#include <vector>
-#include <thread>
+#include <uv.h>
 
 namespace Piccolo
 {
 
-struct NetNodeInfo
-{
-    int addr;
-};
+namespace Network {
 
-struct Message
-{
-    int data;
-};
+typedef struct {
+    uv_tcp_t server;
+    uv_loop_t* loop;
+    int listen_port;
+} NetNode;
 
-enum class IOType {
-    Read,
-    Write
-};
+typedef struct {
+    uv_write_t req;
+    uv_buf_t buf;
+} write_req_t;
 
-#define MaxBufferSize 512
+int start(NetNode *net_node);
 
-struct IOContext {
-    OVERLAPPED overlapped{};
-    WSABUF wsaBuf{MaxBufferSize, buffer};
-    CHAR buffer[MaxBufferSize]{};
-    IOType type{};
-    SOCKET socket = INVALID_SOCKET;
-    DWORD nBytes = 0;
-};
-
-class NetNode
-{
-public:
-    // NetNodeInfo self_info;
-
-    // std::vector<NetNode> node_list;
-
-    WSAData wsaData;
-    std::atomic_bool isShutdown = false;
-    SOCKET serverSocket;
-    HANDLE hIOCP;
-    DWORD NumberOfThreads = 1;
-    std::vector<std::thread> threadGroup;
-
-    int init();
-
-    void accept1();
-
-    void event();
-
-    void update();
-
-    // void registerSelf(NetNodeInfo remote);
-
-    // void send(NetNodeInfo dst, Message msg);
-
-    // void recv(Message msg);
-};
-
-} // namespace end
+} // namespace network
+} // namespace piccolo
