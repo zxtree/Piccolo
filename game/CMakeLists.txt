@@ -15,18 +15,17 @@ set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "Game")
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
 target_link_libraries(${TARGET_NAME} PUBLIC PiccoloRuntime)
+target_link_libraries(${TARGET_NAME} PUBLIC libconfig)
 
 set(POST_BUILD_COMMANDS
   COMMAND ${CMAKE_COMMAND} -E make_directory "${BINARY_ROOT_DIR}"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_FILE_DIR:${TARGET_NAME}>/" "${BINARY_ROOT_DIR}"
+  COMMAND ${CMAKE_COMMAND} -E remove_directory "${BINARY_ROOT_DIR}/${JOLT_ASSET_DIR}"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${ENGINE_ROOT_DIR}/${JOLT_ASSET_DIR}" "${BINARY_ROOT_DIR}/${JOLT_ASSET_DIR}"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${ASSETS_DIR}" "${BINARY_ROOT_DIR}/assets"
+  COMMAND ${CMAKE_COMMAND} -E copy "${PICCOLO_ROOT_DIR}/configs/development/PiccoloEditor.ini" "${BINARY_ROOT_DIR}/PiccoloEditor.ini"
+  COMMAND ${CMAKE_COMMAND} -E copy "${PICCOLO_ROOT_DIR}/build/game/debug/PiccoloGame.exe" "${BINARY_ROOT_DIR}/PiccoloGame.exe"
 )
-
-if(ENABLE_PHYSICS_DEBUG_RENDERER)
-  set(POST_BUILD_COMMANDS ${POST_BUILD_COMMANDS}
-    COMMAND ${CMAKE_COMMAND} -E remove_directory "${BINARY_ROOT_DIR}/${JOLT_ASSET_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${ENGINE_ROOT_DIR}/${JOLT_ASSET_DIR}" "${BINARY_ROOT_DIR}/${JOLT_ASSET_DIR}"
-)
-endif()
 
 add_custom_command(TARGET ${TARGET_NAME} ${POST_BUILD_COMMANDS})
 

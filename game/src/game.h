@@ -1,23 +1,24 @@
 #pragma once
 
+#include "piccolodef.h"
 #include "engine.h"
 #include "runtime/network/network.h"
 
-namespace Piccolo
-{
-    class PiccoloGame
-    {
-    public:
-        PiccoloGame();
+PCL_GAME_NS_OPEN
 
-        virtual ~PiccoloGame();
+class PiccoloGame {
+public:
+    PiccoloGame();
 
-        void initialize(PiccoloEngine* engine_runtime);
+    virtual ~PiccoloGame();
 
-        void clear();
-        
-        void run();
+    void initialize(PiccoloEngine* engine_runtime);
 
-        PiccoloEngine* m_engine_runtime;
-    };
-}
+    void clear();
+    
+    void run();
+
+    PiccoloEngine* m_engine_runtime;
+};
+
+PCL_GAME_NS_CLOSE

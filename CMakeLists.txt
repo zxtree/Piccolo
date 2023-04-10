@@ -39,7 +39,7 @@ endif()
 set(LIB_DIR_DEBUG ${PICCOLO_ROOT_DIR}/lib_debug/lib)
 set(LIB_DIR_RELEASE ${PICCOLO_ROOT_DIR}/lib_release/lib)
 link_directories($<$<CONFIG:DEBUG>:${LIB_DIR_DEBUG}> $<$<CONFIG:RELEASE>:${LIB_DIR_RELEASE}>)
-include_directories($<$<CONFIG:DEBUG>:${PICCOLO_ROOT_DIR}/lib_debug/include> $<$<CONFIG:RELEASE>:${PICCOLO_ROOT_DIR}/lib_release/include>)
+include_directories($<$<CONFIG:DEBUG>:${PICCOLO_ROOT_DIR}/lib_debug/include> $<$<CONFIG:RELEASE>:${PICCOLO_ROOT_DIR}/lib_release/include> ${PICCOLO_ROOT_DIR}/include)
 
 set(vulkan_include ${THIRD_PARTY_DIR}/VulkanSDK/include)
 set(vulkan_lib ${THIRD_PARTY_DIR}/VulkanSDK/lib/Win32/vulkan-1.lib)

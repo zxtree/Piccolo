@@ -1,12 +1,14 @@
+// network node
+// author: zxtree @2023-04-09
 #pragma once
+
+#include "piccolodef.h"
+
 #include <uv.h>
 
-namespace Piccolo
-{
+PCL_ENGINE_NS_OPEN
 
-namespace Network {
-
-typedef struct {
+typedef struct {    
     uv_tcp_t server;
     uv_loop_t* loop;
     int listen_port;
@@ -19,5 +21,4 @@ typedef struct {
 
 int start(NetNode *net_node);
 
-} // namespace network
-} // namespace piccolo
+PCL_ENGINE_NS_CLOSE

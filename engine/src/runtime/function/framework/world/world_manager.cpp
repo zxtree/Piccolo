@@ -11,152 +11,157 @@
 
 #include "_generated/serializer/all_serializer.h"
 
-namespace Piccolo
+#include "game_mode.h"
+
+PCL_NAMESPACE_USE
+
+WorldManager::~WorldManager() { clear(); }
+
+void WorldManager::initialize()
 {
-    WorldManager::~WorldManager() { clear(); }
+    m_is_world_loaded   = false;
+    m_current_world_url = g_runtime_global_context.m_config_manager->getDefaultWorldUrl();
 
-    void WorldManager::initialize()
+    //debugger
+    m_level_debugger = std::make_shared<LevelDebugger>();
+
+    //game mode
+    m_game_mode = new GameMode(this);
+}
+
+void WorldManager::clear()
+{
+    // unload all loaded levels
+    for (auto level_pair : m_loaded_levels)
     {
-        m_is_world_loaded   = false;
-        m_current_world_url = g_runtime_global_context.m_config_manager->getDefaultWorldUrl();
+        level_pair.second->unload();
+    }
+    m_loaded_levels.clear();
 
-        //debugger
-        m_level_debugger = std::make_shared<LevelDebugger>();
+    m_current_active_level.reset();
+
+    // clear world
+    m_current_world_resource.reset();
+    m_current_world_url.clear();
+    m_is_world_loaded = false;
+
+    //clear debugger
+    m_level_debugger.reset();
+}
+
+void WorldManager::tick(float delta_time)
+{
+    if (!m_is_world_loaded)
+    {
+        loadWorld(m_current_world_url);
     }
 
-    void WorldManager::clear()
+    // tick the active level
+    std::shared_ptr<Level> active_level = m_current_active_level.lock();
+    if (active_level)
     {
-        // unload all loaded levels
-        for (auto level_pair : m_loaded_levels)
-        {
-            level_pair.second->unload();
-        }
-        m_loaded_levels.clear();
+        active_level->tick(delta_time);
+        m_level_debugger->tick(active_level);
+        m_game_mode->tick(delta_time);
+    }
+}
 
-        m_current_active_level.reset();
-
-        // clear world
-        m_current_world_resource.reset();
-        m_current_world_url.clear();
-        m_is_world_loaded = false;
-
-        //clear debugger
-        m_level_debugger.reset();
+std::weak_ptr<PhysicsScene> WorldManager::getCurrentActivePhysicsScene() const
+{
+    std::shared_ptr<Level> active_level = m_current_active_level.lock();
+    if (!active_level)
+    {
+        return std::weak_ptr<PhysicsScene>();
     }
 
-    void WorldManager::tick(float delta_time)
-    {
-        if (!m_is_world_loaded)
-        {
-            loadWorld(m_current_world_url);
-        }
+    return active_level->getPhysicsScene();
+}
 
-        // tick the active level
-        std::shared_ptr<Level> active_level = m_current_active_level.lock();
-        if (active_level)
-        {
-            active_level->tick(delta_time);
-            m_level_debugger->tick(active_level);
-        }
+bool WorldManager::loadWorld(const std::string& world_url)
+{
+    LOG_INFO("loading world: {}", world_url);
+    WorldRes   world_res;
+    const bool is_world_load_success = g_runtime_global_context.m_asset_manager->loadAsset(world_url, world_res);
+    if (!is_world_load_success)
+    {
+        return false;
     }
 
-    std::weak_ptr<PhysicsScene> WorldManager::getCurrentActivePhysicsScene() const
-    {
-        std::shared_ptr<Level> active_level = m_current_active_level.lock();
-        if (!active_level)
-        {
-            return std::weak_ptr<PhysicsScene>();
-        }
+    m_current_world_resource = std::make_shared<WorldRes>(world_res);
 
-        return active_level->getPhysicsScene();
+    const bool is_level_load_success = loadLevel(world_res.m_default_level_url);
+    if (!is_level_load_success)
+    {
+        return false;
     }
 
-    bool WorldManager::loadWorld(const std::string& world_url)
+    // set the default level to be active level
+    auto iter = m_loaded_levels.find(world_res.m_default_level_url);
+    ASSERT(iter != m_loaded_levels.end());
+
+    m_current_active_level = iter->second;
+
+    m_is_world_loaded = true;
+
+    LOG_INFO("world load succeed!");
+    return true;
+}
+
+bool WorldManager::loadLevel(const std::string& level_url)
+{
+    std::shared_ptr<Level> level = std::make_shared<Level>();
+    // set current level temporary
+    m_current_active_level       = level;
+
+    const bool is_level_load_success = level->load(level_url);
+    if (is_level_load_success == false)
     {
-        LOG_INFO("loading world: {}", world_url);
-        WorldRes   world_res;
-        const bool is_world_load_success = g_runtime_global_context.m_asset_manager->loadAsset(world_url, world_res);
-        if (!is_world_load_success)
-        {
-            return false;
-        }
-
-        m_current_world_resource = std::make_shared<WorldRes>(world_res);
-
-        const bool is_level_load_success = loadLevel(world_res.m_default_level_url);
-        if (!is_level_load_success)
-        {
-            return false;
-        }
-
-        // set the default level to be active level
-        auto iter = m_loaded_levels.find(world_res.m_default_level_url);
-        ASSERT(iter != m_loaded_levels.end());
-
-        m_current_active_level = iter->second;
-
-        m_is_world_loaded = true;
-
-        LOG_INFO("world load succeed!");
-        return true;
+        return false;
     }
 
-    bool WorldManager::loadLevel(const std::string& level_url)
+    m_loaded_levels.emplace(level_url, level);
+
+    return true;
+}
+
+void WorldManager::reloadCurrentLevel()
+{
+    auto active_level = m_current_active_level.lock();
+    if (active_level == nullptr)
     {
-        std::shared_ptr<Level> level = std::make_shared<Level>();
-        // set current level temporary
-        m_current_active_level       = level;
-
-        const bool is_level_load_success = level->load(level_url);
-        if (is_level_load_success == false)
-        {
-            return false;
-        }
-
-        m_loaded_levels.emplace(level_url, level);
-
-        return true;
+        LOG_WARN("current level is nil");
+        return;
     }
 
-    void WorldManager::reloadCurrentLevel()
+    const std::string level_url = active_level->getLevelResUrl();
+    active_level->unload();
+    m_loaded_levels.erase(level_url);
+
+    const bool is_load_success = loadLevel(level_url);
+    if (!is_load_success)
     {
-        auto active_level = m_current_active_level.lock();
-        if (active_level == nullptr)
-        {
-            LOG_WARN("current level is nil");
-            return;
-        }
-
-        const std::string level_url = active_level->getLevelResUrl();
-        active_level->unload();
-        m_loaded_levels.erase(level_url);
-
-        const bool is_load_success = loadLevel(level_url);
-        if (!is_load_success)
-        {
-            LOG_ERROR("load level failed {}", level_url);
-            return;
-        }
-
-        // update the active level instance
-        auto iter = m_loaded_levels.find(level_url);
-        ASSERT(iter != m_loaded_levels.end());
-
-        m_current_active_level = iter->second;
-
-        LOG_INFO("reload current evel succeed");
+        LOG_ERROR("load level failed {}", level_url);
+        return;
     }
 
-    void WorldManager::saveCurrentLevel()
+    // update the active level instance
+    auto iter = m_loaded_levels.find(level_url);
+    ASSERT(iter != m_loaded_levels.end());
+
+    m_current_active_level = iter->second;
+
+    LOG_INFO("reload current evel succeed");
+}
+
+void WorldManager::saveCurrentLevel()
+{
+    auto active_level = m_current_active_level.lock();
+
+    if (active_level == nullptr)
     {
-        auto active_level = m_current_active_level.lock();
-
-        if (active_level == nullptr)
-        {
-            LOG_ERROR("save level failed, no active level");
-            return;
-        }
-
-        active_level->save();
+        LOG_ERROR("save level failed, no active level");
+        return;
     }
-} // namespace Piccolo
+
+    active_level->save();
+}

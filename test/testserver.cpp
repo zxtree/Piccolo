@@ -15,7 +15,7 @@
 //#define DEFAULT_PORT "17000"
 
 
-using namespace Piccolo::Network;
+using namespace Piccolo::Engine;
 
 int main() {
     NetNode node;

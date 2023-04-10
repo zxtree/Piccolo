@@ -1,55 +1,53 @@
 #pragma once
 
+#include "piccolodef.h"
+
 #include <atomic>
 #include <chrono>
 #include <filesystem>
 #include <string>
 #include <unordered_set>
 
-namespace Piccolo
+PCL_NAMESPACE_OPEN
+
+extern bool                            g_is_editor_mode;
+extern std::unordered_set<std::string> g_editor_tick_component_types;
+
+class PiccoloEngine
 {
-    extern bool                            g_is_editor_mode;
-    extern std::unordered_set<std::string> g_editor_tick_component_types;
+public:
+    static const float s_fps_alpha;
+    
+    void startEngine(const std::string& config_file_path);
+    void shutdownEngine();
 
-    class PiccoloEngine
-    {
-        friend class PiccoloEditor;
-        friend class PiccoloGame;
+    void initialize();
+    void clear();
 
-        static const float s_fps_alpha;
+    bool isQuit() const { return m_is_quit; }
+    void run();
+    bool tickOneFrame(float delta_time);
 
-    public:
-        void startEngine(const std::string& config_file_path);
-        void shutdownEngine();
+    int getFPS() const { return m_fps; }
 
-        void initialize();
-        void clear();
+    void logicalTick(float delta_time);
+    bool rendererTick(float delta_time);
 
-        bool isQuit() const { return m_is_quit; }
-        void run();
-        bool tickOneFrame(float delta_time);
+    void calculateFPS(float delta_time);
 
-        int getFPS() const { return m_fps; }
+    /**
+     *  Each frame can only be called once
+     */
+    float calculateDeltaTime();
 
-    protected:
-        void logicalTick(float delta_time);
-        bool rendererTick(float delta_time);
+protected:
+    bool m_is_quit {false};
 
-        void calculateFPS(float delta_time);
+    std::chrono::steady_clock::time_point m_last_tick_time_point {std::chrono::steady_clock::now()};
 
-        /**
-         *  Each frame can only be called once
-         */
-        float calculateDeltaTime();
+    float m_average_duration {0.f};
+    int   m_frame_count {0};
+    int   m_fps {0};
+};
 
-    protected:
-        bool m_is_quit {false};
-
-        std::chrono::steady_clock::time_point m_last_tick_time_point {std::chrono::steady_clock::now()};
-
-        float m_average_duration {0.f};
-        int   m_frame_count {0};
-        int   m_fps {0};
-    };
-
-} // namespace Piccolo
+PCL_NAMESPACE_CLOSE
