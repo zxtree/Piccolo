@@ -463,3 +463,6 @@ assets/shader/generated/cpp/post_process_vert.h
 assets/shader/generated/cpp/skybox_frag.h
 assets/shader/generated/cpp/skybox_vert.h
 assets/shader/generated/cpp/tone_mapping_frag.h
+
+lib_debug/
+lib_release/
