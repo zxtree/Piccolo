@@ -465,4 +465,6 @@ assets/shader/generated/cpp/skybox_vert.h
 assets/shader/generated/cpp/tone_mapping_frag.h
 
 lib_debug/
+lib_debug/**
 lib_release/
+lib_release/**
